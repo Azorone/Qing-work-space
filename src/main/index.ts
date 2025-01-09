@@ -2,13 +2,25 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { Menu } from 'electron'
 
+const handleDistribute = function (event,args) {
+  console.log(event);
+  console.log(args);
+ return {
+    msg:"yes",
+    data:{
+      code:4
+    }
+  }
+}
+let mainWindow: BrowserWindow | null
 function createWindow(): void {
+  Menu.setApplicationMenu(null)
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
-    show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
@@ -17,10 +29,10 @@ function createWindow(): void {
     }
   })
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-  })
-
+  //  mainWindow.on('ready-to-show', () => {
+  //  mainWindow.show()
+  //})
+  mainWindow.webContents.openDevTools()
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
@@ -58,6 +70,11 @@ app.whenReady().then(() => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+  //handle请求分发
+  ipcMain.handle('request-handle', async(event,data)=>{
+      
+      return handleDistribute(event,data);
   })
 })
 

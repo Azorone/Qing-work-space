@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import Versions from './components/Versions.vue'
-
+import LocalAPI from './api/local.js'
 const ipcHandle = () => window.electron.ipcRenderer.send('ping')
+const ipcHandlLocal= async ()=>{
+  const p = await LocalAPI.getX({a:4}) 
+  console.log(p);
+}
 </script>
 
 <template>
@@ -20,6 +24,7 @@ const ipcHandle = () => window.electron.ipcRenderer.send('ping')
     </div>
     <div class="action">
       <a target="_blank" rel="noreferrer" @click="ipcHandle">Send IPC</a>
+      <a target="_blank" rel="noreferrer" @click="ipcHandlLocal">点我</a>
     </div>
   </div>
   <Versions />
